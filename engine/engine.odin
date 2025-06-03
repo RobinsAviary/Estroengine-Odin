@@ -1,8 +1,10 @@
 package engine
 
 import "core:fmt"
-import rl "vendor:raylib"
 import "core:strings"
+
+// For backend
+import rl "vendor:raylib"
 
 //-ESTROENGINE BEGIN
 
@@ -36,6 +38,8 @@ Divide_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x / vec2.x, vec1.y / vec2.y}
 }
 
+//-VECTOR BEGIN
+
 // A simple type for storing three numbers of the same type and doing math on them, etc.
 Vector3 :: struct($T: typeid) {
     x: T,
@@ -62,6 +66,10 @@ Multiply_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
 Divide_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z}
 }
+
+// VECTOR END
+
+//-COLOR BEGIN
 
 // A simple type to represent colors.
 Color :: struct {
@@ -143,6 +151,10 @@ Color_Create_HSVA :: proc(hue: f32, saturation: f32, value: f32, alpha: u8) -> C
     return result
 }
 
+// COLOR END
+
+//-SHAPES BEGIN
+
 Rectangle :: struct($T: typeid) {
     position: Vector2(T),
     size: Vector2(T),
@@ -152,6 +164,10 @@ Circle :: struct($T: typeid) {
     position: Vector2(T),
     radius: T,
 }
+
+// SHAPES END
+
+//-NODES BEGIN
 
 Node :: struct {
     id: int
@@ -166,6 +182,8 @@ Node3D :: struct {
     using node: Node,
     position: Vector3(f32),
 }
+
+// NODES END
 
 Key :: enum {
     Q,
