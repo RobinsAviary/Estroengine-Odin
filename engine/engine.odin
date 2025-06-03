@@ -132,6 +132,14 @@ Color_HSV :: proc(hue: f32, saturation: f32, value: f32) -> Color {
     return result
 }
 
+Color_RGB :: proc(red: u8, green: u8, blue: u8) -> Color {
+    return {red, green, blue, 1}
+}
+
+Color_RGBA :: proc(red: u8, green: u8, blue: u8, alpha: u8) -> Color {
+    return {red, green, blue, alpha}
+}
+
 Color_HSVA :: proc(hue: f32, saturation: f32, value: f32, alpha: u8) -> Color {
     result: Color
 
@@ -140,6 +148,11 @@ Color_HSVA :: proc(hue: f32, saturation: f32, value: f32, alpha: u8) -> Color {
     result.a = alpha
 
     return result
+}
+
+Rectangle :: struct($T: typeid) {
+    position: Vector2(T),
+    size: Vector2(T),
 }
 
 Node :: struct {
@@ -156,7 +169,32 @@ Node3D :: struct {
     position: Vector3(f32),
 }
 
-// BACKEND WRAPPER FUNCTIONS
+//-RAYLIB CONVERSION FUNCTIONS
+
+Color_ToRaylibColor :: proc(color: Color) -> rl.Color {
+    result: rl.Color 
+
+    result.r = color.r
+    result.g = color.g
+    result.b = color.b
+    result.a = color.a
+    
+    return result
+}
+
+Vector2_ToRaylibVector2 :: proc(vector: Vector2($T)) -> rl.Vector2 {
+    return {vector.x, vector.y}
+}
+
+Vector3_ToRaylibVector3 :: proc(vector: Vector3($T)) -> rl.Vector3 {
+    return {vector.x, vector.y, vector.z}
+}
+
+Rectangle_ToRaylibRectangle :: proc(rectangle: Rectangle($T)) {
+    return {rectangle.position.x, rectangle.position.y, rectangle.size.x, rectangle.size.y}
+}
+ 
+//-BACKEND WRAPPER FUNCTIONS
 
 InitWindow :: proc(size: Vector2(u32), window_title: string) {
     rl.InitWindow(i32(size.x), i32(size.y), strings.clone_to_cstring(window_title))
@@ -174,8 +212,12 @@ DrawEnd :: proc() {
     rl.EndDrawing()
 }
 
-ClearColor :: proc() {
+DrawClearColor :: proc(color: Color) {
+    rl.ClearBackground(Color_ToRaylibColor(color))
+}
 
+DrawRectangle :: proc(rectangle: Rectangle($T), color: Color) {
+    rl.DrawRectangleV(Vector2_ToRaylibVector2(rectangle.position), Vector2_ToRaylibVector2(rectangle.size), Color_ToRaylibColor(color))
 }
 
 // END BACKEND WRAPPER FUNCTIONS
