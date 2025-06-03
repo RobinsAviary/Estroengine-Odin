@@ -13,40 +13,20 @@ Vector2 :: struct($T: typeid) {
     y: T,
 }
 
-Vector2_add :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
+Vector2_Add :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x + vec2.x, vec1.y + vec2.y}
 }
 
-Vector2_subtract :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
+Vector2_Subtract :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x - vec2.x, vec1.y - vec2.y}
 } 
 
-Vector2_multiply :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
+Vector2_Multiply :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x * vec2.x, vec1.y * vec2.y}
 }
 
-Vector2_divide :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
+Vector2_Divide :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x / vec2.x, vec1.y / vec2.y}
-}
-
-add :: proc {
-    Vector2_add,
-    Vector3_add,
-}
-
-subtract :: proc {
-    Vector2_subtract,
-    Vector3_subtract,
-}
-
-multiply :: proc {
-    Vector2_multiply,
-    Vector3_multiply,
-}
-
-divide :: proc {
-    Vector2_divide,
-    Vector3_divide,
 }
 
 Vector3 :: struct($T: typeid) {
@@ -55,21 +35,42 @@ Vector3 :: struct($T: typeid) {
     z: T,
 }
 
-Vector3_add :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
+Vector3_Add :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z}
 }
 
-Vector3_subtract :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
+Vector3_Subtract :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z}
 }
 
-Vector3_multiply :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
+Vector3_Multiply :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z}
 }
 
-Vector3_divide :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
+Vector3_Divide :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z}
 }
+
+Add :: proc {
+    Vector2_Add,
+    Vector3_Add,
+}
+
+Subtract :: proc {
+    Vector2_Subtract,
+    Vector3_Subtract,
+}
+
+Multiply :: proc {
+    Vector2_Multiply,
+    Vector3_Multiply,
+}
+
+Divide :: proc {
+    Vector2_Divide,
+    Vector3_Divide,
+}
+
 
 Color :: struct {
     r: u8,
