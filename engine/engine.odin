@@ -156,6 +156,11 @@ Rectangle :: struct($T: typeid) {
     size: Vector2(T),
 }
 
+Circle :: struct($T: typeid) {
+    position: Vector2(T),
+    radius: T,
+}
+
 Node :: struct {
     id: int
 }
@@ -168,6 +173,127 @@ Node2D :: struct {
 Node3D :: struct {
     using node: Node,
     position: Vector3(f32),
+}
+
+Key :: enum {
+    Q,
+    W,
+    E,
+    R,
+    T,
+    Y,
+    U,
+    I,
+    O,
+    P,
+    A,
+    S,
+    D,
+    F,
+    G,
+    H,
+    J,
+    K,
+    L,
+    Z,
+    X,
+    C,
+    V,
+    B,
+    N,
+    M,
+    One,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Zero,
+    Exclamation,
+    At,
+    NumberSign,
+    Dollar,
+    Percent,
+    Carrot,
+    Ampersand,
+    Asterisk,
+    OpenParenthesis,
+    CloseParenthesis,
+    OpenBracket,
+    CloseBracket,
+    Tab,
+    OpenCurly,
+    CloseCurly,
+    BackSlash,
+    Pipe,
+    Dash,
+    Underscore,
+    Equal,
+    Plus,
+    Colon,
+    Semicolon,
+    LeftShift,
+    RightShift,
+    Shift,
+    LeftControl,
+    RightControl,
+    Control,
+    SmallQuote,
+    Quote,
+    Comma,
+    LessThan,
+    Period,
+    GreaterThan,
+    Slash,
+    QuestionMark,
+    InvertedComma,
+    Tilde,
+    LeftAlt,
+    RightAlt,
+    Alt,
+    NumpadZero,
+    NumpadOne,
+    NumpadTwo,
+    NumpadThree,
+    NumpadFour,
+    NumpadFive,
+    NumpadSix,
+    NumpadSeven,
+    NumpadEight,
+    NumpadNine,
+    NumpadDot,
+    NumpadPlus,
+    NumpadMinus,
+    NumpadDivide,
+    NumpadMultiply,
+    NumpadEnter,
+    Insert,
+    Home,
+    PageUp,
+    Delete,
+    End,
+    PageDown,
+    F1,
+    F2,
+    F3,
+    F4,
+    F5,
+    F6,
+    F7,
+    F8,
+    F9,
+    F10,
+    F11,
+    F12,
+    CapsLock,
+    PrintScreen,
+    Up,
+    Down,
+    Left,
+    Right,
 }
 
 //-RAYLIB CONVERSION FUNCTIONS
@@ -197,6 +323,30 @@ Rectangle_ToRaylibRectangle :: proc(rectangle: Rectangle($T)) {
  
 //-BACKEND WRAPPER FUNCTIONS
 
+Texture :: struct {
+    data: rl.Texture2D,
+}
+
+Audio :: struct {
+    data: rl.Sound,
+}
+
+Texture_LoadFromFile :: proc(texture: ^Texture, filename: string) {
+    texture^.data = rl.LoadTexture(strings.clone_to_cstring(filename))
+}
+
+Texture_Unload :: proc(texture: ^Texture) {
+    rl.UnloadTexture(texture^.data)
+}
+
+Audio_LoadFromFile :: proc(audio: ^Audio, filename: string) {
+    audio^.data = rl.LoadSound(strings.clone_to_cstring(filename))
+}
+
+Audio_Unload :: proc(audio: ^Audio) {
+    rl.UnloadSound(audio^.data)
+}
+
 InitWindow :: proc(size: Vector2(u32), window_title: string) {
     rl.InitWindow(i32(size.x), i32(size.y), strings.clone_to_cstring(window_title))
 }
@@ -219,6 +369,26 @@ DrawClearColor :: proc(color: Color) {
 
 DrawRectangle :: proc(rectangle: Rectangle($T), color: Color) {
     rl.DrawRectangleV(Vector2_ToRaylibVector2(rectangle.position), Vector2_ToRaylibVector2(rectangle.size), Color_ToRaylibColor(color))
+}
+
+DrawRectangleLines :: proc(rectangle: Rectangle($T), color: Color, thickness: f32) {
+    rl.DrawRectangleLinesEx(Rectangle_ToRaylibRectangle(rectangle), thickness, Color_ToRaylibColor(color))
+}
+
+DrawLine :: proc(startPos: Vector2($T), endPos: Vector2(T), color: Color, thickness: f32 = 1) {
+    rl.DrawLineEx(Vector2_ToRaylibVector2(startPos), Vector2_ToRaylibVector2(endPos), thickness, Color_ToRaylibColor(color))
+}
+
+DrawCircle :: proc(circle: Circle($T), color: Color) {
+    rl.DrawCircleV(Vector2_ToRaylibVector2(circle.position), circle.radius, Color_ToRaylibColor(color))
+}
+
+DrawCircleLines :: proc(circle: Circle($T), color: Color, thickness: f32 = 1) {
+    rl.DrawCircleLinesV(Vector2_ToRaylibVector2(circle.position), circle.radius, color)
+}
+
+DrawTexture :: proc(texture: Texture, position: Vector2($T), color: Color) {
+    rl.DrawTexture(texture.data, position.x, position.y, Color_ToRaylibColor(color))
 }
 
 // END BACKEND WRAPPER FUNCTIONS
