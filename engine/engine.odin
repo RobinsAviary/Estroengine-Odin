@@ -12,12 +12,15 @@ echo :: proc() {
     fmt.println("Hello, Robin!")
 }
 
+//-VECTOR BEGIN
+
 // A simple type for storing two numbers of the same type and doing math on them, etc.
 Vector2 :: struct($T: typeid) {
     x: T,
     y: T,
 }
 
+// Creates a Vector2.
 Vector2_Create :: proc(x: $T , y: T) -> Vector2(T) {
     return {x, y}
 }
@@ -38,8 +41,6 @@ Divide_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x / vec2.x, vec1.y / vec2.y}
 }
 
-//-VECTOR BEGIN
-
 // A simple type for storing three numbers of the same type and doing math on them, etc.
 Vector3 :: struct($T: typeid) {
     x: T,
@@ -47,6 +48,7 @@ Vector3 :: struct($T: typeid) {
     z: T,
 }
 
+// Creates a Vector3.
 Vector3_Create :: proc(x: $T, y: T, z: T) -> Vector3(T) {
     return {x, y, z}
 }
@@ -80,7 +82,7 @@ Color :: struct {
 }
 
 // Creates a Color from HSV values. Values are from "0.0" to "1.0".
-Color_Create_HSV :: proc(hue: f32, saturation: f32, value: f32) -> Color {
+Color_Create_HSV :: proc(hue: f32, saturation: f32, value: f32, alpha: u8) -> Color {
     hue := hue // Makes variable mutable
     hue *= 360
     
@@ -128,27 +130,51 @@ Color_Create_HSV :: proc(hue: f32, saturation: f32, value: f32) -> Color {
         result.g = min
         result.b = max
     }
-    result.a = 1
-
-    return result
-}
-
-Color_Create_RGB :: proc(red: u8, green: u8, blue: u8) -> Color {
-    return {red, green, blue, 1}
-}
-
-Color_Create_RGBA :: proc(red: u8, green: u8, blue: u8, alpha: u8) -> Color {
-    return {red, green, blue, alpha}
-}
-
-Color_Create_HSVA :: proc(hue: f32, saturation: f32, value: f32, alpha: u8) -> Color {
-    result: Color
-
-    result = Color_Create_HSV(hue, saturation, value)
 
     result.a = alpha
 
     return result
+}
+
+// Creates a Color.
+Color_Create :: proc(red: u8, green: u8, blue: u8, alpha: u8 = 255) -> Color {
+    return {red, green, blue, alpha}
+}
+
+DefaultColors :: struct{
+    White: Color,
+    Black: Color,
+    Red: Color,
+    Green: Color,
+    Blue: Color,
+    Gray: Color,
+    DarkGray: Color,
+    LightGray: Color,
+    Pink: Color,
+    Yellow: Color,
+    Brown: Color,
+    Purple: Color,
+    HotPink: Color,
+    Estrogen: Color,
+}
+
+DefaultColors_Create :: proc() -> DefaultColors {
+    return {
+        {250, 250, 250, 255}, // White
+        {0, 0, 0, 255}, // Black
+        {255, 0, 0, 255}, // Red
+        {0, 255, 0, 255}, // Green
+        {0, 0, 255, 255}, // Blue
+        {128, 128, 128, 255}, // Gray
+        {48, 48, 48, 255}, // DarkGray
+        {192, 192, 192, 255}, // LightGray
+        {255, 0, 220, 255}, // Pink
+        {255, 216, 0, 255}, // Yellow
+        {84, 45, 19, 255}, // Brown
+        {140, 0, 255, 255}, // Purple
+        {255, 0, 110, 255}, // HotPink
+        {142, 236, 255, 255}, // Estrogen
+    }
 }
 
 // COLOR END
@@ -169,15 +195,18 @@ Circle :: struct($T: typeid) {
 
 //-NODES BEGIN
 
+// A basic node with no position.
 Node :: struct {
     id: int
 }
 
+// A basic node with a 2D position.
 Node2D :: struct {
     using node: Node,
     position: Vector2(f32),
 }
 
+// A basic node with a 3D position.
 Node3D :: struct {
     using node: Node,
     position: Vector3(f32),
@@ -310,21 +339,25 @@ Key :: enum {
 
 //-PROCESS GROUPS BEGIN
 
+// Generic group for adding two estroengine types.
 Add :: proc {
     Add_Vector2,
     Add_Vector3,
 }
 
+// Generic group for subtracting two estroengine types.
 Subtract :: proc {
     Subtract_Vector2,
     Subtract_Vector3,
 }
 
+// Generic group for multiplying two estroengine types.
 Multiply :: proc {
     Multiply_Vector2,
     Multiply_Vector3,
 }
 
+// Generic group for dividing two estroengine types.
 Divide :: proc {
     Divide_Vector2,
     Divide_Vector3,
