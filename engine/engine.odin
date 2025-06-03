@@ -158,6 +158,7 @@ DefaultColors :: struct{
     Estrogen: Color,
 }
 
+// Get a struct of all the base colors in estroengine.
 DefaultColors_Create :: proc() -> DefaultColors {
     return {
         {250, 250, 250, 255}, // White
@@ -192,6 +193,44 @@ Circle :: struct($T: typeid) {
 }
 
 // SHAPES END
+
+//-LIST BEGIN
+List :: struct($T: typeid){
+    data: [dynamic]T
+}
+
+List_Add :: proc(list: ^List($T), value: T) {
+    append(&list.data, value)
+}
+
+List_Append_Value :: proc(list: ^List($T), value: T) {
+    append(&list.data, value)
+}
+
+List_Append_List :: proc(list: ^List($T), list2: [dynamic]T) {
+    for value in List {
+        List_Append_Value(&list.data, value)
+    }
+}
+
+List_Insert :: proc(list: ^List($T), value: T, index: u32) {
+    inject_at(&list.data, value, index)
+}
+
+List_Remove :: proc(list: ^List($T), index: u32) {
+    ordered_remove(&list.data, index)
+}
+
+List_UnorderedRemove :: proc(list: ^List($T), index: u32) {
+    unordered_remove(&list.data, index)
+}
+
+List_Append :: proc{
+    List_Append_Value,
+    List_Append_List,
+}
+
+// LIST END
 
 //-NODES BEGIN
 
@@ -393,46 +432,57 @@ Rectangle_ToRaylibRectangle :: proc(rectangle: Rectangle($T)) {
  
 //-BACKEND WRAPPER FUNCTIONS BEGIN
 
+// A simple texture struct.
 Texture :: struct {
     data: rl.Texture2D,
 }
 
-Audio :: struct {
+// A simple audio struct for sounds, music, etc.
+Sound :: struct {
     data: rl.Sound,
 }
 
+// Loads a texture from the specified filename.
 Texture_LoadFromFile :: proc(texture: ^Texture, filename: string) {
     texture^.data = rl.LoadTexture(strings.clone_to_cstring(filename))
 }
 
+// Unload a texture.
 Texture_Unload :: proc(texture: ^Texture) {
-    rl.UnloadTexture(texture^.data)
+    rl.UnloadTexture(texture.data)
 }
 
-Audio_LoadFromFile :: proc(audio: ^Audio, filename: string) {
-    audio^.data = rl.LoadSound(strings.clone_to_cstring(filename))
+// Loads a sound from the specified filename.
+Audio_LoadFromFile :: proc(sound: ^Sound, filename: string) {
+    sound^.data = rl.LoadSound(strings.clone_to_cstring(filename))
 }
 
-Audio_Unload :: proc(audio: ^Audio) {
-    rl.UnloadSound(audio^.data)
+// Unload a sound.
+Sound_Unload :: proc(sound: ^Sound) {
+    rl.UnloadSound(sound.data)
 }
 
+// Initialize the window with a specific size and Title.
 InitWindow :: proc(size: Vector2(u32), window_title: string) {
     rl.InitWindow(i32(size.x), i32(size.y), strings.clone_to_cstring(window_title))
 }
 
+// Is the window still open? (Can be closed by X, Esc, etc.)
 IsWindowOpen :: proc() -> bool {
     return !rl.WindowShouldClose()
 }
 
+// Used to begin the drawing phase of a frame.
 DrawBegin :: proc() {
     rl.BeginDrawing()
 }
 
+// Used to end the drawing phase of a frame.
 DrawEnd :: proc() {
     rl.EndDrawing()
 }
 
+// Clears the entire screen with a single color.
 DrawClearColor :: proc(color: Color) {
     rl.ClearBackground(Color_ToRaylibColor(color))
 }
