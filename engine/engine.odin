@@ -253,7 +253,7 @@ Node3D :: struct {
 
 // NODES END
 
-Key :: enum {
+Key :: enum u8 {
     Q,
     W,
     E,
@@ -290,7 +290,7 @@ Key :: enum {
     Eight,
     Nine,
     Zero,
-    Exclamation,
+    ExclamationMark,
     At,
     NumberSign,
     Dollar,
@@ -305,7 +305,7 @@ Key :: enum {
     Tab,
     OpenCurly,
     CloseCurly,
-    BackSlash,
+    Backslash,
     Pipe,
     Dash,
     Underscore,
@@ -372,6 +372,20 @@ Key :: enum {
     Down,
     Left,
     Right,
+    Space,
+    Enter,
+    Numpad0,
+    Numpad1,
+    Numpad2,
+    Numpad3,
+    Numpad4,
+    Numpad5,
+    Numpad6,
+    Numpad7,
+    Numpad8,
+    Numpad9,
+    Escape,
+    Apostrophe,
 }
 
 // ESTROENGINE END
@@ -511,18 +525,17 @@ DrawTexture :: proc(texture: Texture, position: Vector2($T), color: Color) {
     rl.DrawTexture(texture.data, position.x, position.y, Color_ToRaylibColor(color))
 }
 
-/*Key_ToRaylibKeys :: proc(key: Key) -> rl.KeyboardKey {
+Key_ToRaylibKeys :: proc(key: Key) -> [dynamic]rl.KeyboardKey {
     switch key {
         case .A:
-            return rl.KeyboardKey.A
+            return {rl.KeyboardKey.A}
         
         case .Alt:
-            return (rl.KeyboardKey.LEFT_ALT || rl.KeyboardKey.RIGHT_ALT)
+            return 
         
         case .Ampersand:
-            return rl.KeyboardKey.SEVEN
+            return {rl.KeyboardKey.SEVEN}
     }
 }
-*/
 
 // BACKEND WRAPPER FUNCTIONS END
