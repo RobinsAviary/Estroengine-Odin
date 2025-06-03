@@ -1,77 +1,69 @@
 package engine
 
 import "core:fmt"
-import "core:strings"
 import rl "vendor:raylib"
+import "core:strings"
+
+//-ESTROENGINE BEGIN
 
 echo :: proc() {
     fmt.println("Hello, Robin!")
 }
 
+// A simple type for storing two numbers of the same type and doing math on them, etc.
 Vector2 :: struct($T: typeid) {
     x: T,
     y: T,
 }
 
-Vector2_Add :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
+Vector2_Create :: proc(x: $T , y: T) -> Vector2(T) {
+    return {x, y}
+}
+
+Add_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x + vec2.x, vec1.y + vec2.y}
 }
 
-Vector2_Subtract :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
+Subtract_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x - vec2.x, vec1.y - vec2.y}
 } 
 
-Vector2_Multiply :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
+Multiply_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x * vec2.x, vec1.y * vec2.y}
 }
 
-Vector2_Divide :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
+Divide_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x / vec2.x, vec1.y / vec2.y}
 }
 
+// A simple type for storing three numbers of the same type and doing math on them, etc.
 Vector3 :: struct($T: typeid) {
     x: T,
     y: T,
     z: T,
 }
 
-Vector3_Add :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
+Vector3_Create :: proc(x: $T, y: T, z: T) -> Vector3(T) {
+    return {x, y, z}
+}
+
+Add_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z}
 }
 
-Vector3_Subtract :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
+Subtract_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z}
 }
 
-Vector3_Multiply :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
+Multiply_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z}
 }
 
-Vector3_Divide :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
+Divide_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z}
 }
 
-Add :: proc {
-    Vector2_Add,
-    Vector3_Add,
-}
-
-Subtract :: proc {
-    Vector2_Subtract,
-    Vector3_Subtract,
-}
-
-Multiply :: proc {
-    Vector2_Multiply,
-    Vector3_Multiply,
-}
-
-Divide :: proc {
-    Vector2_Divide,
-    Vector3_Divide,
-}
-
-
+// A simple type to represent colors.
 Color :: struct {
     r: u8,
     g: u8,
@@ -79,8 +71,8 @@ Color :: struct {
     a: u8,
 }
 
-// Values are from 0.0-1.0
-Color_HSV :: proc(hue: f32, saturation: f32, value: f32) -> Color {
+// Creates a Color from HSV values. Values are from "0.0" to "1.0".
+Color_Create_HSV :: proc(hue: f32, saturation: f32, value: f32) -> Color {
     hue := hue // Makes variable mutable
     hue *= 360
     
@@ -133,18 +125,18 @@ Color_HSV :: proc(hue: f32, saturation: f32, value: f32) -> Color {
     return result
 }
 
-Color_RGB :: proc(red: u8, green: u8, blue: u8) -> Color {
+Color_Create_RGB :: proc(red: u8, green: u8, blue: u8) -> Color {
     return {red, green, blue, 1}
 }
 
-Color_RGBA :: proc(red: u8, green: u8, blue: u8, alpha: u8) -> Color {
+Color_Create_RGBA :: proc(red: u8, green: u8, blue: u8, alpha: u8) -> Color {
     return {red, green, blue, alpha}
 }
 
-Color_HSVA :: proc(hue: f32, saturation: f32, value: f32, alpha: u8) -> Color {
+Color_Create_HSVA :: proc(hue: f32, saturation: f32, value: f32, alpha: u8) -> Color {
     result: Color
 
-    result = Color_HSV(hue, saturation, value)
+    result = Color_Create_HSV(hue, saturation, value)
 
     result.a = alpha
 
@@ -296,7 +288,32 @@ Key :: enum {
     Right,
 }
 
-//-RAYLIB CONVERSION FUNCTIONS
+// ESTROENGINE END
+
+//-PROCESS GROUPS BEGIN
+
+Add :: proc {
+    Add_Vector2,
+    Add_Vector3,
+}
+
+Subtract :: proc {
+    Subtract_Vector2,
+    Subtract_Vector3,
+}
+
+Multiply :: proc {
+    Multiply_Vector2,
+    Multiply_Vector3,
+}
+
+Divide :: proc {
+    Divide_Vector2,
+    Divide_Vector3,
+}
+// PROCESS GROUPS END
+
+//-RAYLIB CONVERSION FUNCTIONS BEGIN
 
 Color_ToRaylibColor :: proc(color: Color) -> rl.Color {
     result: rl.Color 
@@ -320,8 +337,10 @@ Vector3_ToRaylibVector3 :: proc(vector: Vector3($T)) -> rl.Vector3 {
 Rectangle_ToRaylibRectangle :: proc(rectangle: Rectangle($T)) {
     return {rectangle.position.x, rectangle.position.y, rectangle.size.x, rectangle.size.y}
 }
+
+// RAYLIB CONVERSION FUNCTIONS END
  
-//-BACKEND WRAPPER FUNCTIONS
+//-BACKEND WRAPPER FUNCTIONS BEGIN
 
 Texture :: struct {
     data: rl.Texture2D,
@@ -391,4 +410,18 @@ DrawTexture :: proc(texture: Texture, position: Vector2($T), color: Color) {
     rl.DrawTexture(texture.data, position.x, position.y, Color_ToRaylibColor(color))
 }
 
-// END BACKEND WRAPPER FUNCTIONS
+/*Key_ToRaylibKeys :: proc(key: Key) -> rl.KeyboardKey {
+    switch key {
+        case .A:
+            return rl.KeyboardKey.A
+        
+        case .Alt:
+            return (rl.KeyboardKey.LEFT_ALT || rl.KeyboardKey.RIGHT_ALT)
+        
+        case .Ampersand:
+            return rl.KeyboardKey.SEVEN
+    }
+}
+*/
+
+// BACKEND WRAPPER FUNCTIONS END
