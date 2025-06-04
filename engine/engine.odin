@@ -217,6 +217,7 @@ Circle_Create :: proc($T: typeid, position: Vector2(T), radius: T) -> Circle(T) 
 // SHAPES END
 
 //-LIST BEGIN
+
 List :: struct($T: typeid){
     data: [dynamic]T
 }
