@@ -253,6 +253,44 @@ List_Append :: proc{
     List_Append_List,
 }
 
+List_PushBack :: proc(list: ^List($T), value: T) {
+    List_Add(list, value)
+}
+
+List_Length :: proc(list: ^List($T)) -> u32 {
+    return len(list.data)
+}
+
+List_Set :: proc(list: ^List($T), index: u32) {
+    assign_at(list.data, index)
+}
+
+List_At :: proc(list: ^List($T), index: u32) -> T {
+    return list.data[index]
+}
+
+List_Front :: proc(list: ^List($T), index: u32) -> T {
+    return list.data[0]
+}
+
+List_Back :: proc(list: ^List($T), index: u32) -> T {
+    return list.data[List_Length(list) - 1]
+}
+
+List_PopBack :: proc(list: ^List($T)) -> T {
+    listSize: u32 = List_Length(list)
+    result: T = List_At(list, listSize - 1)
+    List_Remove(list, listSize - 1)
+    return result
+}
+
+List_PopFront :: proc(list: ^List($T)) -> T {
+    listSize: u32 = List_Length(list)
+    result: T = List_At(list, listSize - 1)
+    List_Remove(list, listSize - 1)
+    return result
+}
+
 // TODO: Add PushBack, PopBack, Front, Back, At / Get, Set, etc.
 
 // LIST END
