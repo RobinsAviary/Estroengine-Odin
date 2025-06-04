@@ -25,6 +25,10 @@ Vector2_Create :: proc(x: $T , y: T) -> Vector2(T) {
     return {x, y}
 }
 
+Vector2_Cast :: proc(vector: Vector2($T), $T2: typeid) -> Vector2(T2) {
+    return {T2(vector.x), T2(vector.y)}
+}
+
 Add_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x + vec2.x, vec1.y + vec2.y}
 }
@@ -51,6 +55,10 @@ Vector3 :: struct($T: typeid) {
 // Creates a Vector3.
 Vector3_Create :: proc(x: $T, y: T, z: T) -> Vector3(T) {
     return {x, y, z}
+}
+
+Vector3_Cast :: proc(vector: Vector3($T), $T2: typeid) -> Vector3(T2) {
+    return {T2(vector.x), T2(vector.y), T2(vector.z)}
 }
 
 Add_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
@@ -187,9 +195,23 @@ Rectangle :: struct($T: typeid) {
     size: Vector2(T),
 }
 
+// Creates a rectangle.
+Rectangle_Create :: proc($T: typeid, position: Vector2(T), size: Vector2(T)) -> Rectangle(T) {
+    return {position, size}
+}
+
+Rectangle_Cast :: proc(rectangle: Rectangle($T1), $T2: typeid) -> Rectangle(T2) {
+    return {Vector2_Cast(rectangle.position, T2), Vector2_Cast(rectangle.size, T2)}
+}
+
 Circle :: struct($T: typeid) {
     position: Vector2(T),
     radius: T,
+}
+
+// Creates a circle.
+Circle_Create :: proc($T: typeid, position: Vector2(T), radius: T) -> Circle(T) {
+    return {position, radius}
 }
 
 // SHAPES END
@@ -387,6 +409,13 @@ Divide :: proc {
     Divide_Vector2,
     Divide_Vector3,
 }
+
+Cast :: proc {
+    Vector2_Cast,
+    Vector3_Cast,
+    Rectangle_Cast,
+}
+
 // PROCESS GROUPS END
 
 //-RAYLIB CONVERSION FUNCTIONS BEGIN
@@ -669,6 +698,8 @@ Mouse_IsReleased :: proc(button: MouseButton) -> bool {
     return false
 }
 
+// BACKEND WRAPPER FUNCTIONS END
+
 Input_IsHeld :: proc{
     Key_IsHeld,
     Mouse_IsHeld,
@@ -683,5 +714,3 @@ Input_IsReleased :: proc{
     Key_IsReleased,
     Mouse_IsReleased,
 }
-
-// BACKEND WRAPPER FUNCTIONS END
