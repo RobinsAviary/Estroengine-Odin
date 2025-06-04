@@ -253,6 +253,12 @@ Node3D :: struct {
 
 // NODES END
 
+MouseButton :: enum {
+    Left,
+    Right,
+    Middle,
+}
+
 Key :: enum u8 {
     Unknown,
     Q,
@@ -408,89 +414,6 @@ Rectangle_ToRaylibRectangle :: proc(rectangle: Rectangle($T)) {
     return {rectangle.position.x, rectangle.position.y, rectangle.size.x, rectangle.size.y}
 }
 
-// RAYLIB CONVERSION FUNCTIONS END
- 
-//-BACKEND WRAPPER FUNCTIONS BEGIN
-
-// A simple texture struct.
-Texture :: struct {
-    data: rl.Texture2D,
-}
-
-// A simple audio struct for sounds, music, etc.
-Sound :: struct {
-    data: rl.Sound,
-}
-
-// Loads a texture from the specified filename.
-Texture_LoadFromFile :: proc(texture: ^Texture, filename: string) {
-    texture^.data = rl.LoadTexture(strings.clone_to_cstring(filename))
-}
-
-// Unload a texture.
-Texture_Unload :: proc(texture: ^Texture) {
-    rl.UnloadTexture(texture.data)
-}
-
-// Loads a sound from the specified filename.
-Audio_LoadFromFile :: proc(sound: ^Sound, filename: string) {
-    sound^.data = rl.LoadSound(strings.clone_to_cstring(filename))
-}
-
-// Unload a sound.
-Sound_Unload :: proc(sound: ^Sound) {
-    rl.UnloadSound(sound.data)
-}
-
-// Initialize the window with a specific size and Title.
-InitWindow :: proc(size: Vector2(u32), window_title: string) {
-    rl.InitWindow(i32(size.x), i32(size.y), strings.clone_to_cstring(window_title))
-}
-
-// Is the window still open? (Can be closed by X, Esc, etc.)
-IsWindowOpen :: proc() -> bool {
-    return !rl.WindowShouldClose()
-}
-
-// Used to begin the drawing phase of a frame.
-DrawBegin :: proc() {
-    rl.BeginDrawing()
-}
-
-// Used to end the drawing phase of a frame.
-DrawEnd :: proc() {
-    rl.EndDrawing()
-}
-
-// Clears the entire screen with a single color.
-DrawClearColor :: proc(color: Color) {
-    rl.ClearBackground(Color_ToRaylibColor(color))
-}
-
-DrawRectangle :: proc(rectangle: Rectangle($T), color: Color) {
-    rl.DrawRectangleV(Vector2_ToRaylibVector2(rectangle.position), Vector2_ToRaylibVector2(rectangle.size), Color_ToRaylibColor(color))
-}
-
-DrawRectangleLines :: proc(rectangle: Rectangle($T), color: Color, thickness: f32) {
-    rl.DrawRectangleLinesEx(Rectangle_ToRaylibRectangle(rectangle), thickness, Color_ToRaylibColor(color))
-}
-
-DrawLine :: proc(startPos: Vector2($T), endPos: Vector2(T), color: Color, thickness: f32 = 1) {
-    rl.DrawLineEx(Vector2_ToRaylibVector2(startPos), Vector2_ToRaylibVector2(endPos), thickness, Color_ToRaylibColor(color))
-}
-
-DrawCircle :: proc(circle: Circle($T), color: Color) {
-    rl.DrawCircleV(Vector2_ToRaylibVector2(circle.position), circle.radius, Color_ToRaylibColor(color))
-}
-
-DrawCircleLines :: proc(circle: Circle($T), color: Color, thickness: f32 = 1) {
-    rl.DrawCircleLinesV(Vector2_ToRaylibVector2(circle.position), circle.radius, color)
-}
-
-DrawTexture :: proc(texture: Texture, position: Vector2($T), color: Color) {
-    rl.DrawTexture(texture.data, position.x, position.y, Color_ToRaylibColor(color))
-}
-
 Key_ToRaylibKey :: proc(key: Key) -> rl.KeyboardKey {
     conversionTable: map[Key]rl.KeyboardKey
     conversionTable[.Q] = rl.KeyboardKey.Q
@@ -596,20 +519,169 @@ Key_ToRaylibKey :: proc(key: Key) -> rl.KeyboardKey {
     }
 }
 
+MouseButton_ToRaylibMouseButton :: proc(button: MouseButton) -> (rl.MouseButton, bool) {
+    conversionTable: map[MouseButton]rl.MouseButton
+    conversionTable[.Left] = rl.MouseButton.LEFT
+    conversionTable[.Right] = rl.MouseButton.RIGHT
+    conversionTable[.Middle] = rl.MouseButton.MIDDLE
+
+    if result, ok := conversionTable[button]; ok {
+        return result, true
+    } else {
+        return rl.MouseButton.EXTRA, false
+    }
+}
+
+// RAYLIB CONVERSION FUNCTIONS END
+ 
+//-BACKEND WRAPPER FUNCTIONS BEGIN
+
+// A simple texture struct.
+Texture :: struct {
+    data: rl.Texture2D,
+}
+
+// A simple audio struct for sounds, music, etc.
+Sound :: struct {
+    data: rl.Sound,
+}
+
+// Loads a texture from the specified filename.
+Texture_LoadFromFile :: proc(texture: ^Texture, filename: string) {
+    texture^.data = rl.LoadTexture(strings.clone_to_cstring(filename))
+}
+
+// Unload a texture.
+Texture_Unload :: proc(texture: ^Texture) {
+    rl.UnloadTexture(texture.data)
+}
+
+// Loads a sound from the specified filename.
+Audio_LoadFromFile :: proc(sound: ^Sound, filename: string) {
+    sound^.data = rl.LoadSound(strings.clone_to_cstring(filename))
+}
+
+// Unload a sound.
+Sound_Unload :: proc(sound: ^Sound) {
+    rl.UnloadSound(sound.data)
+}
+
+// Initialize the window with a specific size and Title.
+InitWindow :: proc(size: Vector2(u32), window_title: string) {
+    rl.InitWindow(i32(size.x), i32(size.y), strings.clone_to_cstring(window_title))
+}
+
+// Is the window still open? (Can be closed by X, Esc, etc.)
+IsWindowOpen :: proc() -> bool {
+    return !rl.WindowShouldClose()
+}
+
+// Used to begin the drawing phase of a frame.
+DrawBegin :: proc() {
+    rl.BeginDrawing()
+}
+
+// Used to end the drawing phase of a frame.
+DrawEnd :: proc() {
+    rl.EndDrawing()
+}
+
+// Clears the entire screen with a single color.
+DrawClearColor :: proc(color: Color) {
+    rl.ClearBackground(Color_ToRaylibColor(color))
+}
+
+DrawRectangle :: proc(rectangle: Rectangle($T), color: Color) {
+    rl.DrawRectangleV(Vector2_ToRaylibVector2(rectangle.position), Vector2_ToRaylibVector2(rectangle.size), Color_ToRaylibColor(color))
+}
+
+DrawRectangleLines :: proc(rectangle: Rectangle($T), color: Color, thickness: f32) {
+    rl.DrawRectangleLinesEx(Rectangle_ToRaylibRectangle(rectangle), thickness, Color_ToRaylibColor(color))
+}
+
+DrawLine :: proc(startPos: Vector2($T), endPos: Vector2(T), color: Color, thickness: f32 = 1) {
+    rl.DrawLineEx(Vector2_ToRaylibVector2(startPos), Vector2_ToRaylibVector2(endPos), thickness, Color_ToRaylibColor(color))
+}
+
+DrawCircle :: proc(circle: Circle($T), color: Color) {
+    rl.DrawCircleV(Vector2_ToRaylibVector2(circle.position), circle.radius, Color_ToRaylibColor(color))
+}
+
+DrawCircleLines :: proc(circle: Circle($T), color: Color, thickness: f32 = 1) {
+    rl.DrawCircleLinesV(Vector2_ToRaylibVector2(circle.position), circle.radius, color)
+}
+
+DrawTexture :: proc(texture: Texture, position: Vector2($T), color: Color) {
+    rl.DrawTexture(texture.data, position.x, position.y, Color_ToRaylibColor(color))
+}
+
+// Checks if the specified key is held down.
 Key_IsHeld :: proc(key: Key) -> bool {
     return rl.IsKeyDown(Key_ToRaylibKey(key))
 }
 
+// Checks if the specified key has been held for a bit. (Useful for text processors)
 Key_IsHeldRepeat :: proc(key: Key) -> bool {
     return rl.IsKeyPressedRepeat(Key_ToRaylibKey(key))
 }
 
+// Checks if the specified key has just been pressed this frame.
 Key_IsPressed :: proc(key: Key) -> bool {
     return rl.IsKeyPressed(Key_ToRaylibKey(key))
 }
 
+// Checks if the specified key has just been released this frame.
 Key_IsReleased :: proc(key: Key) -> bool {
     return rl.IsKeyReleased(Key_ToRaylibKey(key))
+}
+
+// Get the cursor's position.
+Cursor_GetPosition :: proc() -> Vector2(i32) {
+    return {rl.GetMouseX(), rl.GetMouseY()}
+}
+
+// Set the cursor's position.
+Cursor_SetPosition :: proc(position: Vector2(i32)) {
+    rl.SetMousePosition(position.x, position.y)
+}
+
+Mouse_IsHeld :: proc(button: MouseButton) -> bool {
+    if rlbutton, ok := MouseButton_ToRaylibMouseButton(button); ok {
+        return rl.IsMouseButtonDown(rlbutton)
+    }
+
+    return false
+}
+
+Mouse_IsPressed :: proc(button: MouseButton) -> bool {
+    if rlbutton, ok := MouseButton_ToRaylibMouseButton(button); ok {
+        return rl.IsMouseButtonPressed(rlbutton)
+    }
+
+    return false
+}
+
+Mouse_IsReleased :: proc(button: MouseButton) -> bool {
+    if rlbutton, ok := MouseButton_ToRaylibMouseButton(button); ok {
+        return rl.IsMouseButtonReleased(rlbutton)
+    }
+
+    return false
+}
+
+Input_IsHeld :: proc{
+    Key_IsHeld,
+    Mouse_IsHeld,
+}
+
+Input_IsPressed :: proc{
+    Key_IsPressed,
+    Mouse_IsPressed,
+}
+
+Input_IsReleased :: proc{
+    Key_IsReleased,
+    Mouse_IsReleased,
 }
 
 // BACKEND WRAPPER FUNCTIONS END
