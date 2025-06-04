@@ -253,6 +253,8 @@ List_Append :: proc{
     List_Append_List,
 }
 
+// TODO: Add PushBack, PopBack, Front, Back, At / Get, Set, etc.
+
 // LIST END
 
 //-NODES BEGIN
