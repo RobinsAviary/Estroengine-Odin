@@ -291,8 +291,6 @@ List_PopFront :: proc(list: ^List($T)) -> T {
     return result
 }
 
-// TODO: Add PushBack, PopBack, Front, Back, At / Get, Set, etc.
-
 // LIST END
 
 //-NODES BEGIN
