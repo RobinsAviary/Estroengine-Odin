@@ -25,22 +25,27 @@ Vector2_Create :: proc(x: $T , y: T) -> Vector2(T) {
     return {x, y}
 }
 
+// Casts a Vector2 to a different type.
 Vector2_Cast :: proc(vector: Vector2($T), $T2: typeid) -> Vector2(T2) {
     return {T2(vector.x), T2(vector.y)}
 }
 
+// Adds two Vector2s and returns the result.
 Add_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x + vec2.x, vec1.y + vec2.y}
 }
 
+// Subtracts two Vector2s and returns the result.
 Subtract_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x - vec2.x, vec1.y - vec2.y}
 } 
 
+// Multiplies two Vector2s and returns the result.
 Multiply_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x * vec2.x, vec1.y * vec2.y}
 }
 
+// Divides two Vector2s and returns the result.
 Divide_Vector2 :: proc(vec1: Vector2($T), vec2: Vector2(T)) -> Vector2(T) {
     return {vec1.x / vec2.x, vec1.y / vec2.y}
 }
@@ -53,26 +58,48 @@ Vector3 :: struct($T: typeid) {
 }
 
 // Creates a Vector3.
-Vector3_Create :: proc(x: $T, y: T, z: T) -> Vector3(T) {
+Vector3_Create_T :: proc(x: $T, y: T, z: T) -> Vector3(T) {
     return {x, y, z}
 }
 
+// Creates a Vector3 using an existing Vector2 for x and y, and a third value for z.
+Vector3_Create_Vector2T :: proc(xy: Vector2($T), z: T) {
+    return {xy.x, xy.y, z}
+}
+
+// Creates a Vector3 using a value for x, and an existing Vector2 for y and z.
+Vector3_Create_TVector2 :: proc(x: $T, yz: Vector2(T)) {
+    return {x, yz.x, yz.y}
+}
+
+// Creates a Vector3.
+Vector3_Create :: proc{
+    Vector3_Create_T,
+    Vector3_Create_TVector2,
+    Vector3_Create_Vector2T,
+}
+
+// Casts a Vector3 to a different type.
 Vector3_Cast :: proc(vector: Vector3($T), $T2: typeid) -> Vector3(T2) {
     return {T2(vector.x), T2(vector.y), T2(vector.z)}
 }
 
+// Adds two Vector3s and returns the result.
 Add_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z}
 }
 
+// Subtracts two Vector3s and returns the result.
 Subtract_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z}
 }
 
+// Multiplies two Vector3s and returns the result.
 Multiply_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z}
 }
 
+// Divides two Vector3s and returns the result.
 Divide_Vector3 :: proc(vec1: Vector3($T), vec2: Vector3(T)) -> Vector3(T) {
     return {vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z}
 }
@@ -222,61 +249,75 @@ List :: struct($T: typeid){
     data: [dynamic]T
 }
 
+// Adds a value to the end of a list.
 List_Add :: proc(list: ^List($T), value: T) {
     append(&list.data, value)
 }
 
+// Adds a value to the end of a list.
 List_Append_Value :: proc(list: ^List($T), value: T) {
-    append(&list.data, value)
+    List_Add(list, value)
 }
 
+// Adds a list to the end of a list.
 List_Append_List :: proc(list: ^List($T), list2: [dynamic]T) {
     for value in List {
         List_Append_Value(&list.data, value)
     }
 }
 
+// Inserts a value into a list at a specific index.
 List_Insert :: proc(list: ^List($T), value: T, index: u32) {
     inject_at(&list.data, value, index)
 }
 
+// Removes a value from the list at a specific index.
 List_Remove :: proc(list: ^List($T), index: u32) {
     ordered_remove(&list.data, index)
 }
 
+// Removes a value from the list at a specific index. The list may not stay in the some order afterwards.
 List_UnorderedRemove :: proc(list: ^List($T), index: u32) {
     unordered_remove(&list.data, index)
 }
 
+// Append something to the end of a list.
 List_Append :: proc{
     List_Append_Value,
     List_Append_List,
 }
 
+// Add something to the end of a list.
 List_PushBack :: proc(list: ^List($T), value: T) {
     List_Add(list, value)
 }
 
+// Get the length of a list.
 List_Length :: proc(list: ^List($T)) -> u32 {
     return len(list.data)
 }
 
+// Set a value in a list at a specific index.
 List_Set :: proc(list: ^List($T), index: u32) {
     assign_at(list.data, index)
 }
 
+// Get a value in a list at a specific index.
 List_At :: proc(list: ^List($T), index: u32) -> T {
     return list.data[index]
 }
 
+// Get the value at the beginning of a list.
 List_Front :: proc(list: ^List($T), index: u32) -> T {
     return list.data[0]
 }
 
+// Get the value at the end of a list.
 List_Back :: proc(list: ^List($T), index: u32) -> T {
     return list.data[List_Length(list) - 1]
 }
 
+// Get the last value of a list, and remove it from said list.
 List_PopBack :: proc(list: ^List($T)) -> T {
     listSize: u32 = List_Length(list)
     result: T = List_At(list, listSize - 1)
@@ -284,6 +325,7 @@ List_PopBack :: proc(list: ^List($T)) -> T {
     return result
 }
 
+// Get the first value of a list, and remove it from said list.
 List_PopFront :: proc(list: ^List($T)) -> T {
     listSize: u32 = List_Length(list)
     result: T = List_At(list, listSize - 1)
@@ -314,12 +356,14 @@ Node3D :: struct {
 
 // NODES END
 
+// An enum of mouse buttons.
 MouseButton :: enum {
     Left,
     Right,
     Middle,
 }
 
+// An enum of keys on the keyboard.
 Key :: enum u8 {
     Unknown,
     Q,
@@ -713,6 +757,7 @@ Cursor_SetPosition :: proc(position: Vector2(i32)) {
     rl.SetMousePosition(position.x, position.y)
 }
 
+// Checks if the specified mouse button is held down.
 Mouse_IsHeld :: proc(button: MouseButton) -> bool {
     if rlbutton, ok := MouseButton_ToRaylibMouseButton(button); ok {
         return rl.IsMouseButtonDown(rlbutton)
@@ -721,6 +766,7 @@ Mouse_IsHeld :: proc(button: MouseButton) -> bool {
     return false
 }
 
+// Checks if the specified mouse button has just been pressed this frame.
 Mouse_IsPressed :: proc(button: MouseButton) -> bool {
     if rlbutton, ok := MouseButton_ToRaylibMouseButton(button); ok {
         return rl.IsMouseButtonPressed(rlbutton)
@@ -729,6 +775,7 @@ Mouse_IsPressed :: proc(button: MouseButton) -> bool {
     return false
 }
 
+// Checks if the specified mouse button has just been released this frame.
 Mouse_IsReleased :: proc(button: MouseButton) -> bool {
     if rlbutton, ok := MouseButton_ToRaylibMouseButton(button); ok {
         return rl.IsMouseButtonReleased(rlbutton)
