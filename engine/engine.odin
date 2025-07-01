@@ -1,16 +1,11 @@
 package engine
 
-import "core:fmt"
 import "core:strings"
 
 // For backend
 import rl "vendor:raylib"
 
 //-ESTROENGINE BEGIN
-
-echo :: proc() {
-    fmt.println("Hello, Robin!")
-}
 
 //-VECTOR BEGIN
 
@@ -176,47 +171,25 @@ Color_Create :: proc(red: u8, green: u8, blue: u8, alpha: u8 = 255) -> Color {
     return {red, green, blue, alpha}
 }
 
-DefaultColors :: struct{
-    White: Color,
-    Black: Color,
-    Red: Color,
-    Green: Color,
-    Blue: Color,
-    Gray: Color,
-    DarkGray: Color,
-    LightGray: Color,
-    Pink: Color,
-    Yellow: Color,
-    Brown: Color,
-    Purple: Color,
-    HotPink: Color,
-    Estrogen: Color,
-}
-
-// Get a struct of all the base colors in estroengine.
-DefaultColors_Create :: proc() -> DefaultColors {
-    return {
-        {250, 250, 250, 255}, // White
-        {0, 0, 0, 255}, // Black
-        {255, 0, 0, 255}, // Red
-        {0, 255, 0, 255}, // Green
-        {0, 0, 255, 255}, // Blue
-        {128, 128, 128, 255}, // Gray
-        {48, 48, 48, 255}, // DarkGray
-        {192, 192, 192, 255}, // LightGray
-        {255, 0, 220, 255}, // Pink
-        {255, 216, 0, 255}, // Yellow
-        {84, 45, 19, 255}, // Brown
-        {140, 0, 255, 255}, // Purple
-        {255, 0, 110, 255}, // HotPink
-        {142, 236, 255, 255}, // Estrogen
-    }
-}
+White: Color = {250, 250, 250, 255}
+Black: Color = {0, 0, 0, 255}
+Red: Color = {255, 0, 0, 255}
+Blue: Color = {0, 0, 255, 255}
+Gray: Color = {128, 128, 128, 255}
+DarkGray: Color = {48, 48, 48, 255}
+LightGray: Color = {192, 192, 192, 255}
+Pink: Color = {255, 0, 220, 255}
+Yellow: Color = {255, 216, 0, 255}
+Brown: Color = {84, 45, 19, 255}
+Purple: Color = {140, 0, 255, 255}
+HotPink: Color = {255, 0, 110, 255}
+Estrogen: Color = {142, 236, 255, 255}
 
 // COLOR END
 
 //-SHAPES BEGIN
 
+// A basic struct for defining a Rectangle shape.
 Rectangle :: struct($T: typeid) {
     position: Vector2(T),
     size: Vector2(T),
@@ -227,10 +200,12 @@ Rectangle_Create :: proc($T: typeid, position: Vector2(T), size: Vector2(T)) -> 
     return {position, size}
 }
 
+// Cast a rectangle's values to a different type.
 Rectangle_Cast :: proc(rectangle: Rectangle($T1), $T2: typeid) -> Rectangle(T2) {
     return {Vector2_Cast(rectangle.position, T2), Vector2_Cast(rectangle.size, T2)}
 }
 
+// A basic struct for defining a Circle shape.
 Circle :: struct($T: typeid) {
     position: Vector2(T),
     radius: T,
@@ -245,8 +220,14 @@ Circle_Create :: proc($T: typeid, position: Vector2(T), radius: T) -> Circle(T) 
 
 //-LIST BEGIN
 
+// A basic dynamic list that can be added to, indexed, and removed from.
 List :: struct($T: typeid){
     data: [dynamic]T
+}
+
+// De-allocate a list.
+List_Delete :: proc(list: ^List($T)) {
+    delete(list.data)
 }
 
 // Adds a value to the end of a list.
@@ -333,13 +314,32 @@ List_PopFront :: proc(list: ^List($T)) -> T {
     return result
 }
 
+// Clear a list of all values.
+List_Clear :: proc(list: ^List($T)) {
+    clear(list.data)
+}
+
 // LIST END
 
 //-NODES BEGIN
 
 // A basic node with no position.
 Node :: struct {
-    id: int
+    id: u128,
+
+    Step: proc(),
+    Draw: proc(),
+}
+
+// Create a new node inside an engine.
+Node_Create :: proc(engine: ^Engine, stepFunc: proc() = nil, drawFunc: proc() = nil) -> Node {
+    result: Node
+    result.id = engine.nextIndex
+    engine.nextIndex += 1
+    result.Step = stepFunc
+    result.Draw = drawFunc
+
+    return result
 }
 
 // A basic node with a 2D position.
@@ -353,6 +353,20 @@ Node3D :: struct {
     using node: Node,
     position: Vector3(f32),
 }
+
+// A struct for defining an engine instance.
+Engine :: struct {
+    nextIndex: u128,
+}
+
+// Create an engine.
+Engine_Create :: proc() -> Engine {
+    return Engine{1}
+}
+
+/*Engine_Delete :: proc(engine: Engine) {
+
+}*/
 
 // NODES END
 
@@ -493,6 +507,7 @@ Divide :: proc {
     Divide_Vector3,
 }
 
+// Cast a type to a different type
 Cast :: proc {
     Vector2_Cast,
     Vector3_Cast,
@@ -698,31 +713,41 @@ DrawEnd :: proc() {
     rl.EndDrawing()
 }
 
+GetDelta :: proc() -> f32 {
+    return rl.GetFrameTime()
+}
+
 // Clears the entire screen with a single color.
 DrawClearColor :: proc(color: Color) {
     rl.ClearBackground(Color_ToRaylibColor(color))
 }
 
+// Draw a filled rectangle with a given color.
 DrawRectangle :: proc(rectangle: Rectangle($T), color: Color) {
     rl.DrawRectangleV(Vector2_ToRaylibVector2(rectangle.position), Vector2_ToRaylibVector2(rectangle.size), Color_ToRaylibColor(color))
 }
 
+// Draw a lined rectangle with a given color and thickness.
 DrawRectangleLines :: proc(rectangle: Rectangle($T), color: Color, thickness: f32) {
     rl.DrawRectangleLinesEx(Rectangle_ToRaylibRectangle(rectangle), thickness, Color_ToRaylibColor(color))
 }
 
+// Draw a line with a given color and thickness.
 DrawLine :: proc(startPos: Vector2($T), endPos: Vector2(T), color: Color, thickness: f32 = 1) {
     rl.DrawLineEx(Vector2_ToRaylibVector2(startPos), Vector2_ToRaylibVector2(endPos), thickness, Color_ToRaylibColor(color))
 }
 
+// Draw a filled circle with a given color.
 DrawCircle :: proc(circle: Circle($T), color: Color) {
     rl.DrawCircleV(Vector2_ToRaylibVector2(circle.position), circle.radius, Color_ToRaylibColor(color))
 }
 
+// Draw a lined circle with a given color and thickness.
 DrawCircleLines :: proc(circle: Circle($T), color: Color, thickness: f32 = 1) {
     rl.DrawCircleLinesV(Vector2_ToRaylibVector2(circle.position), circle.radius, color)
 }
 
+// Draw a texture at a given postion and color tint.
 DrawTexture :: proc(texture: Texture, position: Vector2($T), color: Color) {
     rl.DrawTexture(texture.data, position.x, position.y, Color_ToRaylibColor(color))
 }
@@ -786,16 +811,19 @@ Mouse_IsReleased :: proc(button: MouseButton) -> bool {
 
 // BACKEND WRAPPER FUNCTIONS END
 
+// Checks if an input is held down.
 Input_IsHeld :: proc{
     Key_IsHeld,
     Mouse_IsHeld,
 }
 
+// Checks if an input has just been pressed this frame.
 Input_IsPressed :: proc{
     Key_IsPressed,
     Mouse_IsPressed,
 }
 
+// Checks if an input has just been released this frame.
 Input_IsReleased :: proc{
     Key_IsReleased,
     Mouse_IsReleased,
