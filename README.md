@@ -1,5 +1,5 @@
 # Estroengine
-An easy-to-use node-based game engine, built on [Raylib](https://www.raylib.com/) in [Odin](https://odin-lang.org/).
+A portable easy-to-use node-based game engine, built on [Raylib](https://www.raylib.com/) in [Odin](https://odin-lang.org/).
 
 ## Example
     package main
