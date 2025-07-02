@@ -771,6 +771,14 @@ Window_Maximize :: proc() {
     rl.MaximizeWindow()
 }
 
+Filename_Exists :: proc(filename: string) -> bool {
+    return rl.FileExists(strings.clone_to_cstring(filename))
+}
+
+Filename_DirectoryExists ::proc(filename: string) -> bool {
+    return rl.DirectoryExists(strings.clone_to_cstring(filename))
+}
+
 // Minimize the window.
 Window_Minimize :: proc() {
     rl.MinimizeWindow()
@@ -1003,6 +1011,15 @@ Mouse_IsReleased :: proc(button: MouseButton) -> bool {
 
     return false
 }
+
+Screenshot_Save :: proc(filename: string) {
+    rl.TakeScreenshot(strings.clone_to_cstring(filename))
+}
+
+URL_Open :: proc(url: string) {
+    rl.OpenURL(strings.clone_to_cstring(url))
+}
+
 
 // TODO: Random
 
