@@ -234,6 +234,7 @@ Circle_Create :: proc($T: typeid, position: Vector2(T), radius: T) -> Circle(T) 
 
 // A basic dynamic list that can be added to, indexed, and removed from.
 List :: struct($T: typeid){
+    // The internal Odin dynamic array. Use this for iterating over the list.
     data: [dynamic]T
 }
 
@@ -807,6 +808,29 @@ Window_GetPosition :: proc() -> Vector2(i32) {
 // Set the position of the window.
 Window_SetPosition :: proc(vector: Vector2(i32)) {
     rl.SetWindowPosition(vector.x, vector.y)
+}
+
+@(private)
+_windowMinSize: Vector2(i32) = nil
+
+@(private)
+_windowMaxSize: Vector2(i32) = nil
+
+Window_GetMinSize :: proc() -> Vector2(i32) {
+    return _windowMinSize
+}
+
+Wnidow_GetMaxSize :: proc() -> Vector2(i32) {
+    return _windowMaxSize
+}
+
+Window_SetMinSize :: proc(vector: Vector2(i32)) {
+    _windowMinSize = vector
+    rl.SetWindowMinSize()
+}
+
+Window_SetMaxSize :: proc(vector: Vector2(i32)) {
+    _windowMaxSize = vector
 }
 
 @(private)
