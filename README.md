@@ -38,3 +38,5 @@ If you want to attach it in such a way that matches the repo name (my preferred 
 Estroengine is almost entirely documented.
 
 Odin includes a built-in tool to generate this documentation. There is a ``docs.bat`` file for easily exporting everything to a ``docs.txt`` file. You can also access this by using ``odin docs`` in the command line with a folder (or ``.`` for the current directory).
+
+You can also view this documentation while writing code by using [OLS](https://github.com/DanielGavin/ols). If you're adding the library as a collection (``estro:engine`` as opposed to ``engine``) you'll need to add it to the ``ols.json`` file for your project. Otherwise it will link automatically.
