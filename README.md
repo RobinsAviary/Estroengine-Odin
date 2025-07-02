@@ -34,4 +34,7 @@ If you want to attach it in such a way that matches the repo name (my preferred 
     }
 
 ## Docs
-Odin includes a built-in tool to generate documentation. There is a ``.bat`` file for easily exporting everything to a ``.txt`` file. You can also access this by using ``odin docs`` in the command line with a folder (or ``.`` for the current directory).
+
+Estroengine is almost entirely documented.
+
+Odin includes a built-in tool to generate this documentation. There is a ``.bat`` file for easily exporting everything to a ``.txt`` file. You can also access this by using ``odin docs`` in the command line with a folder (or ``.`` for the current directory).
