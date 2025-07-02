@@ -32,3 +32,6 @@ If you want to attach it in such a way that matches the repo name (my preferred 
             e.Engine_Update(&engine)
         }
     }
+
+## Docs
+Odin includes a built-in tool to generate documentation. There is a ``.bat`` file for easily exporting everything to a ``.txt`` file. You can also access this by using ``odin docs`` in the command line with a folder (or ``.`` for the current directory).
