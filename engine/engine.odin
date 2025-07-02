@@ -726,6 +726,7 @@ Sound_Unload :: proc(sound: ^Sound) {
     rl.UnloadSound(sound.data)
 }
 
+@(private)
 _windowDefaultSize: Vector2(u32) = Vector2_Create(600,400,u32)
 
 // Initialize the window with a specific size and Title.
@@ -800,6 +801,7 @@ Window_SetPosition :: proc(vector: Vector2(i32)) {
     rl.SetWindowPosition(vector.x, vector.y)
 }
 
+@(private)
 _windowSize: Vector2(u32)
 
 // Get the window size.
@@ -822,6 +824,7 @@ Clipboard_GetText :: proc() -> string {
     return string(rl.GetClipboardText())
 }
 
+@(private)
 _windowTitle: string = ""
 
 // Set the title text of the window.
@@ -835,6 +838,7 @@ Window_GetTitle :: proc() -> string {
     return _windowTitle
 }
 
+@(private)
 _fpsTarget: u32 = 0
 
 // Set the target framerate.
