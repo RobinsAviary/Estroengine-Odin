@@ -1,6 +1,5 @@
 # Estroengine
-An experimental port of [Estroengine](https://github.com/RobinsAviary/Estroengine), an easy-to-use node-based game engine, to [Odin](https://odin-lang.org/).
-
+An easy-to-use node-based game engine, built on [Raylib](https://www.raylib.com/) in [Odin](https://odin-lang.org/).
 
 ## Example
     package main
