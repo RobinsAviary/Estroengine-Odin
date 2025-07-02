@@ -1,8 +1,8 @@
 # Estroengine
-A portable easy-to-use node-based game engine, built on [Raylib](https://www.raylib.com/) in [Odin](https://odin-lang.org/).
+A portable easy-to-use node-based game engine, built on [raylib](https://www.raylib.com/) in [Odin](https://odin-lang.org/).
 
 ## A Note On Portability
-Estroengine is designed in such a way to be a dynamic and simple graphics library, with some data types attached. As such, projects made with Estroengine are technically capable of using multiple different underlying frameworks, allowng for effectively endless portability. That being said, the current version just uses Raylib to fill in all the implementations, but I hope for this to change more in the future.
+Estroengine is designed in such a way to be a dynamic and simple graphics library, with some data types attached. As such, projects made with Estroengine are technically capable of using multiple different underlying frameworks, allowng for effectively endless portability. That being said, the current version just uses [raylib](https://www.raylib.com/) to fill in all the implementations, but I hope for this to change more in the future.
 
 ## Example
     package main
