@@ -1,6 +1,7 @@
 package engine
 
 import "core:strings"
+import "core:math/rand"
 
 // For backend
 import rl "vendor:raylib"
@@ -15,9 +16,20 @@ Vector2 :: struct($T: typeid) {
     y: T,
 }
 
-// Creates a Vector2.
-Vector2_Create :: proc(x: $T , y: T) -> Vector2(T) {
+// Creates a Vector2 by inferring the input type.
+Vector2_CreateInfer :: proc(x: $T , y: T) -> Vector2(T) {
     return {x, y}
+}
+
+// Creates a Vector2 with a specific type.
+Vector2_CreateType :: proc(x: $T1, y: T1, $T: typeid) -> Vector2(T) {
+    return {T(x), T(y)}
+}
+
+// Generic group for creating a Vector2.
+Vector2_Create :: proc{
+    Vector2_CreateInfer,
+    Vector2_CreateType,
 }
 
 // Casts a Vector2 to a different type.
@@ -369,6 +381,7 @@ Engine_Create :: proc() -> Engine {
 
 }*/
 
+// Update the engine for this frame.
 Engine_Update :: proc(engine: ^Engine) {
     for &node in engine.nodes.data {
         node.Step()
@@ -550,7 +563,7 @@ Vector3_ToRaylibVector3 :: proc(vector: Vector3($T)) -> rl.Vector3 {
 }
 
 RaylibVector2_ToVector2 :: proc(vector: rl.Vector2, $T: typeid) -> Vector2(T) {
-    return Vector2_Create(T(vector.x), T(vector.y))
+    return Vector2_Create(vector.x, vector.y, T)
 }
 
 RaylibVector3_ToVector3 :: proc(vector: rl.Vector3, $T: typeid) -> Vector3(T) {
@@ -713,9 +726,13 @@ Sound_Unload :: proc(sound: ^Sound) {
     rl.UnloadSound(sound.data)
 }
 
+_windowDefaultSize: Vector2(u32) = Vector2_Create(600,400,u32)
+
 // Initialize the window with a specific size and Title.
-Window_Init :: proc(size: Vector2(u32), window_title: string) {
+Window_Init :: proc(size: Vector2(u32) = _windowDefaultSize, window_title: string) {
     rl.InitWindow(i32(size.x), i32(size.y), strings.clone_to_cstring(window_title))
+    _windowSize = size
+    _windowTitle = window_title
 }
 
 // Is the window still open? (Can be closed by X, Esc, etc.)
@@ -748,6 +765,16 @@ Window_IsMinimized :: proc() -> bool {
     return rl.IsWindowMinimized()
 }
 
+// Maximizes the window.
+Window_Maximize :: proc() {
+    rl.MaximizeWindow()
+}
+
+// Minimize the window.
+Window_Minimize :: proc() {
+    rl.MinimizeWindow()
+}
+
 // Checks if the window is hidden.
 Window_IsHidden :: proc() -> bool {
     return rl.IsWindowHidden()
@@ -768,8 +795,67 @@ Window_GetPosition :: proc() -> Vector2(i32) {
     return RaylibVector2_ToVector2(rl.GetWindowPosition(), i32)
 }
 
+// Set the position of the window.
 Window_SetPosition :: proc(vector: Vector2(i32)) {
     rl.SetWindowPosition(vector.x, vector.y)
+}
+
+_windowSize: Vector2(u32)
+
+// Get the window size.
+Window_GetSize :: proc() -> Vector2(u32) {
+    return _windowSize
+}
+
+// Set the window size.
+Window_SetSize :: proc(size: Vector2(u32)) {
+    rl.SetWindowSize(i32(size.x), i32(size.y))
+}
+
+// Set the current text stored in the clipboard.
+Clipboard_SetText :: proc(text: string) {
+    rl.SetClipboardText(strings.clone_to_cstring(text))
+}
+
+// Get the current text stored in the clipboard.
+Clipboard_GetText :: proc() -> string {
+    return string(rl.GetClipboardText())
+}
+
+_windowTitle: string = ""
+
+// Set the title text of the window.
+Window_SetTitle :: proc(title: string) {
+    _windowTitle = title
+    rl.SetWindowTitle(strings.clone_to_cstring(title))
+}
+
+// Get the title text of the window.
+Window_GetTitle :: proc() -> string {
+    return _windowTitle
+}
+
+_fpsTarget: u32 = 0
+
+// Set the target framerate.
+FPS_SetTarget :: proc(target: u32) {
+    rl.SetTargetFPS(i32(target))
+    _fpsTarget = target
+}
+
+// Get the target framerate.
+FPS_GetTarget :: proc() -> u32 {
+    return _fpsTarget
+}
+
+// Get the current framerate that the window is running at.
+FPS_Get :: proc() -> u32 {
+    return u32(rl.GetFPS())
+}
+
+// Sleep the computer for the specified number of seconds.
+Sleep :: proc(seconds: f32) {
+    rl.WaitTime(f64(seconds))
 }
 
 // Used to begin the drawing phase of a frame.
@@ -782,12 +868,23 @@ Draw_End :: proc() {
     rl.EndDrawing()
 }
 
+// Activate the clipping rendering mode.
+Clipping_Begin :: proc(rectangle: Rectangle($T)) {
+    rl.BeginScissorMode(rectangle.position.x, rectangle.position.y, rectangle.size.x, rectangle.size.y)
+}
+
+// Finish the clipping rendering mode.
+Clipping_End :: proc() {
+    rl.EndScissorMode()
+}
+
+// Get the length of time that it took to draw the last frame in seconds.
 Delta_Get :: proc() -> f32 {
     return rl.GetFrameTime()
 }
 
 // Clears the entire screen with a single color.
-DrawClearColor :: proc(color: Color) {
+Color_DrawClear :: proc(color: Color) {
     rl.ClearBackground(Color_ToRaylibColor(color))
 }
 
@@ -856,6 +953,26 @@ Cursor_IsOnscreen :: proc() -> bool {
     return rl.IsCursorOnScreen()
 }
 
+// Show the cursor onscreen.
+Cursor_Show :: proc() {
+    rl.ShowCursor()
+}
+
+// Hide the cursor onscreen.
+Cursor_Hide :: proc() {
+    rl.HideCursor()
+}
+
+// Freeze the cursor.
+Cursor_Lock :: proc() {
+    rl.DisableCursor()
+}
+
+// Unfreeze the cursor.
+Cursor_Unlock :: proc() {
+    rl.EnableCursor()
+}
+
 // Checks if the specified mouse button is held down.
 Mouse_IsHeld :: proc(button: MouseButton) -> bool {
     if rlbutton, ok := MouseButton_ToRaylibMouseButton(button); ok {
@@ -882,6 +999,8 @@ Mouse_IsReleased :: proc(button: MouseButton) -> bool {
 
     return false
 }
+
+// TODO: Random
 
 // BACKEND WRAPPER FUNCTIONS END
 
