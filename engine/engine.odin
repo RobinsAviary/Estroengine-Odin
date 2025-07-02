@@ -357,16 +357,28 @@ Node3D :: struct {
 // A struct for defining an engine instance.
 Engine :: struct {
     nextIndex: u128,
+    nodes: List(Node)
 }
 
 // Create an engine.
 Engine_Create :: proc() -> Engine {
-    return Engine{1}
+    return Engine{1, {}}
 }
 
 /*Engine_Delete :: proc(engine: Engine) {
 
 }*/
+
+Engine_Update :: proc(engine: ^Engine) {
+    for &node in engine.nodes.data {
+        node.Step()
+    }
+    Draw_Begin()
+    for &node in engine.nodes.data {
+        node.Draw()
+    }
+    Draw_End()
+}
 
 // NODES END
 
@@ -537,6 +549,14 @@ Vector3_ToRaylibVector3 :: proc(vector: Vector3($T)) -> rl.Vector3 {
     return {vector.x, vector.y, vector.z}
 }
 
+RaylibVector2_ToVector2 :: proc(vector: rl.Vector2, $T: typeid) -> Vector2(T) {
+    return Vector2_Create(T(vector.x), T(vector.y))
+}
+
+RaylibVector3_ToVector3 :: proc(vector: rl.Vector3, $T: typeid) -> Vector3(T) {
+    return Vector3_Create(T(vector.x), T(vector.y), T(vector.z))
+}
+
 Rectangle_ToRaylibRectangle :: proc(rectangle: Rectangle($T)) {
     return {rectangle.position.x, rectangle.position.y, rectangle.size.x, rectangle.size.y}
 }
@@ -694,26 +714,75 @@ Sound_Unload :: proc(sound: ^Sound) {
 }
 
 // Initialize the window with a specific size and Title.
-InitWindow :: proc(size: Vector2(u32), window_title: string) {
+Window_Init :: proc(size: Vector2(u32), window_title: string) {
     rl.InitWindow(i32(size.x), i32(size.y), strings.clone_to_cstring(window_title))
 }
 
 // Is the window still open? (Can be closed by X, Esc, etc.)
-IsWindowOpen :: proc() -> bool {
+Window_IsOpen :: proc() -> bool {
     return !rl.WindowShouldClose()
 }
 
+// Close the window.
+Window_Close :: proc() {
+    rl.CloseWindow()
+}
+
+// Checks if the window is fullscreen.
+Window_IsFullscreen :: proc() -> bool {
+    return rl.IsWindowFullscreen()
+}
+
+// Checks if the window is in focus (clicked on).
+Window_IsFocused :: proc() -> bool {
+    return rl.IsWindowFocused()
+}
+
+// Checks if the window is maximized.
+Window_IsMaximized :: proc() -> bool {
+    return rl.IsWindowMaximized()
+}
+
+// Checks if the window is minimized.
+Window_IsMinimized :: proc() -> bool {
+    return rl.IsWindowMinimized()
+}
+
+// Checks if the window is hidden.
+Window_IsHidden :: proc() -> bool {
+    return rl.IsWindowHidden()
+}
+
+// Restores the window back onto the screen.
+Window_Restore :: proc() {
+    rl.RestoreWindow()
+}
+
+// Toggles borderless windowed fullscreen mode for the window.
+Window_ToggleFullscreen :: proc() {
+    rl.ToggleBorderlessWindowed()
+}
+
+// Get the position of the window.
+Window_GetPosition :: proc() -> Vector2(i32) {
+    return RaylibVector2_ToVector2(rl.GetWindowPosition(), i32)
+}
+
+Window_SetPosition :: proc(vector: Vector2(i32)) {
+    rl.SetWindowPosition(vector.x, vector.y)
+}
+
 // Used to begin the drawing phase of a frame.
-DrawBegin :: proc() {
+Draw_Begin :: proc() {
     rl.BeginDrawing()
 }
 
 // Used to end the drawing phase of a frame.
-DrawEnd :: proc() {
+Draw_End :: proc() {
     rl.EndDrawing()
 }
 
-GetDelta :: proc() -> f32 {
+Delta_Get :: proc() -> f32 {
     return rl.GetFrameTime()
 }
 
@@ -723,32 +792,32 @@ DrawClearColor :: proc(color: Color) {
 }
 
 // Draw a filled rectangle with a given color.
-DrawRectangle :: proc(rectangle: Rectangle($T), color: Color) {
+Rectangle_Draw :: proc(rectangle: Rectangle($T), color: Color) {
     rl.DrawRectangleV(Vector2_ToRaylibVector2(rectangle.position), Vector2_ToRaylibVector2(rectangle.size), Color_ToRaylibColor(color))
 }
 
 // Draw a lined rectangle with a given color and thickness.
-DrawRectangleLines :: proc(rectangle: Rectangle($T), color: Color, thickness: f32) {
+Rectangle_DrawLines :: proc(rectangle: Rectangle($T), color: Color, thickness: f32) {
     rl.DrawRectangleLinesEx(Rectangle_ToRaylibRectangle(rectangle), thickness, Color_ToRaylibColor(color))
 }
 
 // Draw a line with a given color and thickness.
-DrawLine :: proc(startPos: Vector2($T), endPos: Vector2(T), color: Color, thickness: f32 = 1) {
+Line_Draw :: proc(startPos: Vector2($T), endPos: Vector2(T), color: Color, thickness: f32 = 1) {
     rl.DrawLineEx(Vector2_ToRaylibVector2(startPos), Vector2_ToRaylibVector2(endPos), thickness, Color_ToRaylibColor(color))
 }
 
 // Draw a filled circle with a given color.
-DrawCircle :: proc(circle: Circle($T), color: Color) {
+Circle_Draw :: proc(circle: Circle($T), color: Color) {
     rl.DrawCircleV(Vector2_ToRaylibVector2(circle.position), circle.radius, Color_ToRaylibColor(color))
 }
 
 // Draw a lined circle with a given color and thickness.
-DrawCircleLines :: proc(circle: Circle($T), color: Color, thickness: f32 = 1) {
+Circle_DrawLines :: proc(circle: Circle($T), color: Color, thickness: f32 = 1) {
     rl.DrawCircleLinesV(Vector2_ToRaylibVector2(circle.position), circle.radius, color)
 }
 
 // Draw a texture at a given postion and color tint.
-DrawTexture :: proc(texture: Texture, position: Vector2($T), color: Color) {
+Texture_Draw :: proc(texture: Texture, position: Vector2($T), color: Color) {
     rl.DrawTexture(texture.data, position.x, position.y, Color_ToRaylibColor(color))
 }
 
@@ -780,6 +849,11 @@ Cursor_GetPosition :: proc() -> Vector2(i32) {
 // Set the cursor's position.
 Cursor_SetPosition :: proc(position: Vector2(i32)) {
     rl.SetMousePosition(position.x, position.y)
+}
+
+// Check if the cursor is overtop the window.
+Cursor_IsOnscreen :: proc() -> bool {
+    return rl.IsCursorOnScreen()
 }
 
 // Checks if the specified mouse button is held down.
@@ -827,4 +901,17 @@ Input_IsPressed :: proc{
 Input_IsReleased :: proc{
     Key_IsReleased,
     Mouse_IsReleased,
+}
+
+// Draw something to the screen.
+Draw :: proc{
+    Rectangle_Draw,
+    Circle_Draw,
+    Texture_Draw,
+}
+
+// Draw something to the screen with lines instead of as a filled shape.
+DrawLines :: proc{
+    Rectangle_DrawLines,
+    Circle_DrawLines,
 }
