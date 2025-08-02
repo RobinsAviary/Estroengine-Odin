@@ -1,3 +1,5 @@
+package engine
+
 //-VECTOR BEGIN
 
 // A simple type for storing two numbers of the same type and doing math on them, etc.
